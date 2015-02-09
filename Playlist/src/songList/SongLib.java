@@ -1,9 +1,8 @@
+package songList;
+
 //Jasmine Feng and Risham Chokshi
 //cs213 Assignment 1
-
-
-
-package songList;
+//to do: check if the fields exist and also do the tokenizer for the thing ready if no album or artist
 
 import java.awt.Color;
 import java.awt.Dimension;
@@ -210,11 +209,21 @@ public class SongLib extends JFrame implements ActionListener {
 		List.addListSelectionListener(new ListSelectionListener(){
 			public void valueChanged(ListSelectionEvent e){
 				if(List.getSelectedIndex()!=-1){
-					Display.setText("Details: " + Songs.get(List.getSelectedIndex()).getSongsName()+", "+Songs.get(List.getSelectedIndex()).getSongsArtist()+", "+ Songs.get(List.getSelectedIndex()).getSongsYear()+", "+ Songs.get(List.getSelectedIndex()).getSongsAlbum());
+					String year_temp= ""; String album_temp = "";
+					if(Songs.get(List.getSelectedIndex()).getSongsYear()==null)
+						year_temp = "";
+					else
+						year_temp = Songs.get(List.getSelectedIndex()).getSongsYear().trim();
+					if(Songs.get(List.getSelectedIndex()).getSongsAlbum()==null)
+						album_temp = "";
+					else
+						album_temp = Songs.get(List.getSelectedIndex()).getSongsAlbum().trim();
+					
+					Display.setText("Details: " + Songs.get(List.getSelectedIndex()).getSongsName()+", "+Songs.get(List.getSelectedIndex()).getSongsArtist()+", "+ year_temp+", "+ album_temp);
 					song_name.setText(Songs.get(List.getSelectedIndex()).getSongsName());
 					artist_name.setText(Songs.get(List.getSelectedIndex()).getSongsArtist());
-					year.setText(Songs.get(List.getSelectedIndex()).getSongsYear());
-					album.setText(Songs.get(List.getSelectedIndex()).getSongsAlbum());
+					year.setText(year_temp);
+					album.setText(album_temp);
 				
 				}
 			}});
@@ -227,13 +236,13 @@ public class SongLib extends JFrame implements ActionListener {
 	
 	
 	public void SortList(){
-		if(Songs!=null)
+		if(Songs.isEmpty()!=true)
 		Collections.sort(Songs, new SongComparator());
 		
 	}
 	
 	public boolean FindList(Song comp){
-		if(Songs!=null)
+		if(Songs.isEmpty()!=true)
 		return Songs.contains(comp);
 		//else
 		return false;
@@ -265,6 +274,7 @@ public class SongLib extends JFrame implements ActionListener {
 		while((line = br.readLine()) != null) {
 			
 			if(line.length()>1){
+				//System.out.println(line);
 			Song song = tokenize(line);
 			Songs.add(song);
 		}
@@ -276,9 +286,20 @@ public class SongLib extends JFrame implements ActionListener {
 	
 	private Song tokenize(String line) {
 		
-	
-		String[] tokens = line.split("\\|");
 		
+		String[] tokens = new String[4];
+		tokens[0]=null;
+		tokens[1] = null;
+		tokens[2] = null;
+		tokens[3] = null;
+		
+		String [] tokens_hold = line.split("\\|");
+		
+		for(int i =0; i<tokens_hold.length;i++){
+			tokens[i] = tokens_hold[i];
+		}
+		
+		//System.out.println(tokens[0]+tokens[1]+tokens[2]+tokens[3]);
 		Song song = new Song(tokens[0], tokens[1], tokens[2], tokens[3]);
 		
 		return song;
@@ -303,7 +324,17 @@ public class SongLib extends JFrame implements ActionListener {
 		BufferedWriter bw = new BufferedWriter(fw);
 		
 		for(int i=0; i<Songs.size(); i++) {
-			line += Songs.get(i).SongsName + "|" + Songs.get(i).SongsArtist + "|" + Songs.get(i).SongsYear + "|" + Songs.get(i).SongsAlbum +"\n";
+			String year_temp,album_temp;
+			if(Songs.get(i).getSongsYear()==null)
+				year_temp = "";
+			else
+				year_temp = Songs.get(i).getSongsYear().trim();
+			if(Songs.get(i).getSongsAlbum()==null)
+				album_temp = "";
+			else
+				album_temp = Songs.get(i).getSongsAlbum().trim();
+			
+			line += Songs.get(i).SongsName + "|" + Songs.get(i).SongsArtist + "|" + year_temp + "|" + album_temp +"\n";
 			//System.out.println(line);
 			bw.write(line);
 			line = "";
@@ -329,7 +360,7 @@ public class SongLib extends JFrame implements ActionListener {
 	public int EditList(String name, String Artist, String Year, String album, int choice){
 		
 		if(choice==0){
-			if(name!=null&&Artist!=null&&Year!=null&&album!=null){
+			if(name!=null&&Artist!=null){
 				Song temp = new Song(name,Artist,Year,album);
 				if(FindList(temp)!=true){
 					Songs.add(temp);
@@ -393,10 +424,22 @@ public class SongLib extends JFrame implements ActionListener {
 			
 			//System.out.println("You Selected : " + List.getSelectedValue());
 			
-			String songName = add_song_name.getText(); 
-			String artistName = add_artist_name.getText();
-			String yearValue = add_year.getText();
-			String albumName = add_album.getText();
+			String songName = add_song_name.getText().trim(); 
+			String artistName = add_artist_name.getText().trim();
+			String yearValue = add_year.getText().trim();
+			String albumName = add_album.getText().trim();
+			
+			
+			
+			//two types of checks
+			if(songName==null || songName.length()==0 || artistName==null || artistName.length()==0){
+				//throw an error
+				Error.setText("Error: Fill in Song and Arist textfeild");
+			}
+			else{
+				
+				if(yearValue == null || yearValue.length()==0) yearValue = null;
+				if(albumName == null || albumName.length() == 0) albumName = null;
 			
 			int index = EditList(songName, artistName, yearValue, albumName, 0);
 			RedoList(); // adding to the list with the sorting
@@ -406,12 +449,13 @@ public class SongLib extends JFrame implements ActionListener {
 				List.setSelectedIndex(index);
 				List.ensureIndexIsVisible(List.getSelectedIndex());
 			}
-			else if(Songs!=null){
+			else if(Songs.isEmpty()!=true){
 				List.setSelectedIndex(0);
 				List.ensureIndexIsVisible(List.getSelectedIndex());
 			}
 				
-		}
+			}
+			}
 		
 		else if(event.getSource() == Delete) {
 			//System.out.println("Delete button clicked");
@@ -419,7 +463,7 @@ public class SongLib extends JFrame implements ActionListener {
 			if(Inside_Edit.isVisible()==true)
 				Inside_Edit.setVisible(false);
 			
-			if(Songs!=null && List.getSelectedValue()!=null){
+			if(Songs.isEmpty()!=true && List.getSelectedValue()!=null){
 			String[] selection = separateSelection(List.getSelectedValue().toString());
 			EditList(selection[0], selection[1], null, null, 1);
 			songlist.remove(List.getSelectedIndex());
@@ -428,12 +472,13 @@ public class SongLib extends JFrame implements ActionListener {
 				List.setSelectedIndex(List.getSelectedIndex());
 				List.ensureIndexIsVisible(List.getSelectedIndex());
 			}
-			else if(Songs!=null){
+			else if(Songs.isEmpty()!=true){
 				List.setSelectedIndex(0);
 				List.ensureIndexIsVisible(List.getSelectedIndex());
 			}
-				
-			}
+			if(Songs.isEmpty()==true)
+				Display.setText("");
+				}
 			else
 			{
 				Error.setText("Error:Cannot be deleted");
@@ -467,10 +512,17 @@ public class SongLib extends JFrame implements ActionListener {
 		
 		else if(event.getSource() == Submit){
 			//it takes in all the fields checks if it exists
-			String songName = song_name.getText();
-			String artistName = artist_name.getText();
-			String yearValue = year.getText();
-			String albumName = album.getText();
+			String songName = song_name.getText().trim();
+			String artistName = artist_name.getText().trim();
+			String yearValue = year.getText().trim();
+			String albumName = album.getText().trim();
+			
+			if(songName == null || songName.length()==0 || artistName == null || artistName.length()==0)
+				Error.setText("Error: Fill in Song and Arist textfeild");
+			else{
+				
+				if(yearValue == null || yearValue.length()==0) yearValue = null;
+				if(albumName == null || albumName.length() == 0) albumName = null;
 			
 			Song temp = new Song(songName,artistName,yearValue,albumName);
 			int index = indexOf(temp);
@@ -491,7 +543,7 @@ public class SongLib extends JFrame implements ActionListener {
 					List.setSelectedIndex(index);
 					List.ensureIndexIsVisible(List.getSelectedIndex());
 				}
-				else if(Songs!=null){
+				else if(Songs.isEmpty()!=true){
 					List.setSelectedIndex(0);
 					List.ensureIndexIsVisible(List.getSelectedIndex());
 				}
@@ -503,6 +555,7 @@ public class SongLib extends JFrame implements ActionListener {
 				//it is found
 				Error.setText("Error: Song already exist");
 			}
+		}
 		}
 		
 		else {

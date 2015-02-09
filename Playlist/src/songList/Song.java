@@ -52,13 +52,18 @@ public class Song {
 	}
 	@Override
 	public boolean equals(Object song2) {
-		if(song2!=null && !(song2 instanceof Song)){
+		
+		if(song2!=null && (song2 instanceof Song)){
 			Song Song2 = (Song) song2;
-        if(this.SongsName.equalsIgnoreCase(Song2.getSongsName()))
+		
+        if(SongsName.equalsIgnoreCase(Song2.getSongsName())==true){
+        	
         	return this.SongsArtist.equalsIgnoreCase(Song2.getSongsArtist());
+        }
 		}
+		
      return false;
   }
-
+	
 	
 }

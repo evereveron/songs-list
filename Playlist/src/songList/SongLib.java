@@ -33,8 +33,12 @@ import javax.swing.JScrollPane;
 import javax.swing.JTextArea;
 import javax.swing.JTextField;
 import javax.swing.ListSelectionModel;
+import javax.swing.event.ListSelectionEvent;
+import javax.swing.event.ListSelectionListener;
 
 public class SongLib extends JFrame implements ActionListener {
+	
+	
 	
 	//puts in all the information based on the index
 	ArrayList <Song> Songs = new ArrayList<Song>();
@@ -57,7 +61,7 @@ public class SongLib extends JFrame implements ActionListener {
 	JButton Submit = new JButton("Submit");
 	
 	//After clicking Add, these buttons should be there
-	JButton Add_Cancel = new JButton("Cancel");
+	//JButton Add_Cancel = new JButton("Cancel");
 	//JButton Add_Submit = new JButton("Submit");
 	
 	//Creating Panel
@@ -111,13 +115,12 @@ public class SongLib extends JFrame implements ActionListener {
 		//change the Display
 		
 		
-		/* **** 
-		 * why is the display auto set to 0?
-		 */
+		
 		if(Songs.size()>=1){
 			List.setSelectedIndex(0);
-			this.Display.setText(Songs.get(0).getSongsName()+", "+Songs.get(0).getSongsArtist()+", "+ Songs.get(0).getSongsYear()+", "+ Songs.get(0).getSongsAlbum());
+			this.Display.setText("Details: " + Songs.get(0).getSongsName()+", "+Songs.get(0).getSongsArtist()+", "+ Songs.get(0).getSongsYear()+", "+ Songs.get(0).getSongsAlbum());
 		}
+		
 		List.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
 		
 		listScroller = new JScrollPane(List);
@@ -135,7 +138,7 @@ public class SongLib extends JFrame implements ActionListener {
 		Edit_List.setPreferredSize(new Dimension(150,250));
 		
 		
-		JPanel Inside_Edit = new JPanel(new GridLayout(0,1));
+		Inside_Edit = new JPanel(new GridLayout(0,1));
 		Inside_Edit.setPreferredSize(new Dimension(100,180));
 		Inside_Edit.add(new JLabel("Song:"));
 		Inside_Edit.add(song_name);
@@ -153,7 +156,9 @@ public class SongLib extends JFrame implements ActionListener {
 		
 		//added this!! 
 		
-		//Edit_List.add(Inside_Edit);
+		Edit_List.add(Inside_Edit);
+		Inside_Edit.setVisible(false);
+		
 		
 		//do the add_delete panel
 		Add_Inside = new JPanel(new GridLayout(0,1));
@@ -167,7 +172,7 @@ public class SongLib extends JFrame implements ActionListener {
 		Add_Inside.add(new JLabel("Album:"));
 		Add_Inside.add(add_album);
 		Add_Inside.add(Add);
-		Add_Inside.add(Add_Cancel);		
+				
 		AddPanel = new JPanel(new FlowLayout());
 		
 		
@@ -205,21 +210,52 @@ public class SongLib extends JFrame implements ActionListener {
             }
         });
 		
-		
+		List.addListSelectionListener(new ListSelectionListener(){
+			public void valueChanged(ListSelectionEvent e){
+				if(List.getSelectedIndex()!=-1){
+					Display.setText("Details: " + Songs.get(List.getSelectedIndex()).getSongsName()+", "+Songs.get(List.getSelectedIndex()).getSongsArtist()+", "+ Songs.get(List.getSelectedIndex()).getSongsYear()+", "+ Songs.get(List.getSelectedIndex()).getSongsAlbum());
+					song_name.setText(Songs.get(List.getSelectedIndex()).getSongsName());
+					artist_name.setText(Songs.get(List.getSelectedIndex()).getSongsArtist());
+					year.setText(Songs.get(List.getSelectedIndex()).getSongsYear());
+					album.setText(Songs.get(List.getSelectedIndex()).getSongsAlbum());
+				
+				}
+			}});
+				
+		    
+			
 		
 	}
 	
 	
 	
 	public void SortList(){
+		if(Songs!=null)
 		Collections.sort(Songs, new SongComparator());
 		
 	}
 	
 	public boolean FindList(Song comp){
+		if(Songs!=null)
 		return Songs.contains(comp);
-		
+		//else
+		return false;
 	}	
+	
+	public void RedoList(){
+		
+		for(int i =Songs.size()-1; i>=0; i--){
+			songlist.remove(i);
+			}
+		
+		for(int i =0; i<Songs.size(); i++){
+			String temp = Songs.get(i).getSongsName();
+			if(temp!=null && Songs.get(i).getSongsArtist()!=null){
+				temp = temp + ", " + Songs.get(i).getSongsArtist();
+				songlist.addElement(temp);
+			}
+			}
+	}
 	
 	public void readFile(String fileName) throws IOException{
 		
@@ -281,21 +317,38 @@ public class SongLib extends JFrame implements ActionListener {
 		
 	}
 	
-	public void EditList(String name, String Artist, String Year, String album, int choice){
+	
+	public int indexOf(Object o) {
+	    if (o != null && (o instanceof Song)) {
+	    	Song song2 = (Song) o;
+	        for (int i = 0; i < Songs.size(); i++)
+	            if (song2.equals(Songs.get(i)))
+	                return i;
+	      }
+	    return -1;
+	}
+	
+	
+	public int EditList(String name, String Artist, String Year, String album, int choice){
 		
 		if(choice==0){
 			if(name!=null&&Artist!=null&&Year!=null&&album!=null){
 				Song temp = new Song(name,Artist,Year,album);
 				if(FindList(temp)!=true){
 					Songs.add(temp);
-					
 					String temp2 = Songs.get(Songs.size()-1).getSongsName() + ", " + Songs.get(Songs.size()-1).getSongsArtist();
 					songlist.addElement(temp2);
-					
+					Error.setText("");
 					SortList();
+					//find the index in the arraylist
+					int index = indexOf(temp);
+					
+					return index;					
 					}
 				else{ //the name already exists
-					Display.setText("Error: This song already Exist");
+					Error.setText("Error: This song already Exist");
+					Error.setForeground(Color.red);
+					
 				}
 			}
 		
@@ -309,13 +362,15 @@ public class SongLib extends JFrame implements ActionListener {
 						 break;
 					}
 				}
-				if(t!=false){//it was not found
+				if(t==false){//it was not found
 					Display.setText("Error:Cannot be deleted");
 				}
+			
 			}
 			
 		}
-					
+		
+			return -1;		
 	}
 	
 	//method is for 
@@ -342,17 +397,57 @@ public class SongLib extends JFrame implements ActionListener {
 			String yearValue = add_year.getText();
 			String albumName = add_album.getText();
 			
-			EditList(songName, artistName, yearValue, albumName, 0);
+			int index = EditList(songName, artistName, yearValue, albumName, 0);
+			RedoList(); // adding to the list with the sorting
 			
+			
+			if(index!=-1){ 
+				List.setSelectedIndex(index);
+				List.ensureIndexIsVisible(List.getSelectedIndex());
+			}
+			else if(Songs!=null){
+				List.setSelectedIndex(0);
+				List.ensureIndexIsVisible(List.getSelectedIndex());
+			}
+				
 		}
+		
 		else if(event.getSource() == Delete) {
 			System.out.println("Delete button clicked");
+			if(Songs!=null && List.getSelectedValue()!=null){
 			String[] selection = separateSelection(List.getSelectedValue().toString());
 			EditList(selection[0], selection[1], null, null, 1);
 			songlist.remove(List.getSelectedIndex());
+			
+			if(List.getSelectedIndex()!=-1){
+				List.setSelectedIndex(List.getSelectedIndex());
+				List.ensureIndexIsVisible(List.getSelectedIndex());
+			}
+			else if(Songs!=null){
+				List.setSelectedIndex(0);
+				List.ensureIndexIsVisible(List.getSelectedIndex());
+			}
+				
+			}
+			else
+			{
+				Error.setText("Error:Cannot be deleted");
+			}
 		}
 		else if(event.getSource() == Edit) {
 			System.out.println("Edit button clicked");
+			//first get index, check if edit matches, and then change by delete
+			if(Songs!= null && List.getSelectedIndex()!=-1){
+				
+				Inside_Edit.setVisible(true);
+				
+			
+			}
+		
+			else
+			{
+				Error.setText("Error: Add to the list or Select an Index");
+			}
 		}
 		else {
 			System.out.println("error in action performed");

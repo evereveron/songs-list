@@ -3,15 +3,13 @@ package songList;
 //Jasmine Feng and Risham Chokshi
 //cs213 Assignment 1
 
-import java.awt.BorderLayout;
+
 import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.FlowLayout;
 import java.awt.GridLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.awt.event.WindowAdapter;
-import java.awt.event.WindowEvent;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.io.BufferedWriter;
@@ -23,15 +21,12 @@ import java.io.BufferedReader;
 
 import javax.swing.DefaultListModel;
 import javax.swing.JButton;
-import javax.swing.JCheckBox;
-import javax.swing.JComboBox;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JList;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTextArea;
-import javax.swing.JTextField;
 import javax.swing.ListSelectionModel;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
@@ -193,7 +188,8 @@ public class SongLib extends JFrame implements ActionListener {
 		Add.addActionListener(this);
 		Delete.addActionListener(this);
 		Edit.addActionListener(this);
-		
+		Cancel.addActionListener(this);
+		Submit.addActionListener(this);
 		//for testing purposes:
 		
 		
@@ -389,8 +385,12 @@ public class SongLib extends JFrame implements ActionListener {
 	public void actionPerformed(ActionEvent event){
 		
 		if(event.getSource() == Add) {
-			System.out.println("Add button clicked");
-			System.out.println("You Selected : " + List.getSelectedValue());
+			//System.out.println("Add button clicked");
+			
+			if(Inside_Edit.isVisible()==true)
+				Inside_Edit.setVisible(false);
+			
+			//System.out.println("You Selected : " + List.getSelectedValue());
 			
 			String songName = add_song_name.getText(); 
 			String artistName = add_artist_name.getText();
@@ -413,7 +413,11 @@ public class SongLib extends JFrame implements ActionListener {
 		}
 		
 		else if(event.getSource() == Delete) {
-			System.out.println("Delete button clicked");
+			//System.out.println("Delete button clicked");
+			
+			if(Inside_Edit.isVisible()==true)
+				Inside_Edit.setVisible(false);
+			
 			if(Songs!=null && List.getSelectedValue()!=null){
 			String[] selection = separateSelection(List.getSelectedValue().toString());
 			EditList(selection[0], selection[1], null, null, 1);
@@ -434,8 +438,9 @@ public class SongLib extends JFrame implements ActionListener {
 				Error.setText("Error:Cannot be deleted");
 			}
 		}
+		
 		else if(event.getSource() == Edit) {
-			System.out.println("Edit button clicked");
+			//System.out.println("Edit button clicked");
 			
 			//first get index, check if edit matches, and then change by delete
 			if(Songs!= null && List.getSelectedIndex()!=-1 && Inside_Edit.isVisible()==false){
@@ -450,6 +455,52 @@ public class SongLib extends JFrame implements ActionListener {
 			else
 			{
 				Error.setText("Error: Add to the list or Select an Index");
+			}
+		}
+		
+		else if(event.getSource() == Cancel){
+			//System.out.println("Cancel is clicked");
+			Inside_Edit.setVisible(false);
+			Error.setText("");
+		}
+		
+		else if(event.getSource() == Submit){
+			//it takes in all the fields checks if it exists
+			String songName = song_name.getText();
+			String artistName = artist_name.getText();
+			String yearValue = year.getText();
+			String albumName = album.getText();
+			
+			Song temp = new Song(songName,artistName,yearValue,albumName);
+			int index = indexOf(temp);
+			//System.out.println(index+" "+ songName+artistName+yearValue+albumName);
+			//check if index is found
+			if(index == -1){ //not found
+				//removing
+				//System.out.println("here");
+				String[] selection = separateSelection(List.getSelectedValue().toString());
+				EditList(selection[0], selection[1], null, null, 1);
+				songlist.remove(List.getSelectedIndex());
+				//adding again
+				index = EditList(songName, artistName, yearValue, albumName, 0);
+				RedoList(); // adding to the list with the sorting
+				
+				
+				if(index!=-1){ 
+					List.setSelectedIndex(index);
+					List.ensureIndexIsVisible(List.getSelectedIndex());
+				}
+				else if(Songs!=null){
+					List.setSelectedIndex(0);
+					List.ensureIndexIsVisible(List.getSelectedIndex());
+				}
+				
+				
+				
+			}
+			else {
+				//it is found
+				Error.setText("Error: Song already exist");
 			}
 		}
 		

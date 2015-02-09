@@ -436,19 +436,23 @@ public class SongLib extends JFrame implements ActionListener {
 		}
 		else if(event.getSource() == Edit) {
 			System.out.println("Edit button clicked");
+			
 			//first get index, check if edit matches, and then change by delete
-			if(Songs!= null && List.getSelectedIndex()!=-1){
+			if(Songs!= null && List.getSelectedIndex()!=-1 && Inside_Edit.isVisible()==false){
 				
 				Inside_Edit.setVisible(true);
-				
-			
+							
 			}
-		
+			
+			else if(Inside_Edit.isVisible()==true)
+				Inside_Edit.setVisible(false);
+			
 			else
 			{
 				Error.setText("Error: Add to the list or Select an Index");
 			}
 		}
+		
 		else {
 			System.out.println("error in action performed");
 		}

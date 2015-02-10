@@ -1,8 +1,9 @@
-package songList;
-
 //Jasmine Feng and Risham Chokshi
 //cs213 Assignment 1
-//to do: check if the fields exist and also do the tokenizer for the thing ready if no album or artist
+
+package songList;
+
+
 
 import java.awt.Color;
 import java.awt.Dimension;
@@ -121,7 +122,7 @@ public class SongLib extends JFrame implements ActionListener {
 		listScroller = new JScrollPane(List);
 		listScroller.setPreferredSize(new Dimension(250, 80));
 		
-		JLabel label = new JLabel("Song_Name,Song_Artist");
+		JLabel label = new JLabel("Playlist");
 		label.setLabelFor(List);
 		Song_List.add(label);
 		Song_List.add(listScroller);
@@ -417,6 +418,7 @@ public class SongLib extends JFrame implements ActionListener {
 	public void actionPerformed(ActionEvent event){
 		
 		if(event.getSource() == Add) {
+			Error.setText("");
 			//System.out.println("Add button clicked");
 			
 			if(Inside_Edit.isVisible()==true)
@@ -434,7 +436,7 @@ public class SongLib extends JFrame implements ActionListener {
 			//two types of checks
 			if(songName==null || songName.length()==0 || artistName==null || artistName.length()==0){
 				//throw an error
-				Error.setText("Error: Fill in Song and Arist textfeild");
+				Error.setText("Error: Fill in Song and Artist");
 			}
 			else{
 				
@@ -458,6 +460,7 @@ public class SongLib extends JFrame implements ActionListener {
 			}
 		
 		else if(event.getSource() == Delete) {
+			Error.setText("");
 			//System.out.println("Delete button clicked");
 			
 			if(Inside_Edit.isVisible()==true)
@@ -478,6 +481,7 @@ public class SongLib extends JFrame implements ActionListener {
 			}
 			if(Songs.isEmpty()==true)
 				Display.setText("");
+				Error.setText("");
 				}
 			else
 			{
@@ -486,6 +490,7 @@ public class SongLib extends JFrame implements ActionListener {
 		}
 		
 		else if(event.getSource() == Edit) {
+			Error.setText("");
 			//System.out.println("Edit button clicked");
 			
 			//first get index, check if edit matches, and then change by delete
@@ -500,7 +505,7 @@ public class SongLib extends JFrame implements ActionListener {
 			
 			else
 			{
-				Error.setText("Error: Add to the list or Select an Index");
+				Error.setText("Error: Add to the list first");
 			}
 		}
 		
@@ -511,6 +516,7 @@ public class SongLib extends JFrame implements ActionListener {
 		}
 		
 		else if(event.getSource() == Submit){
+			Error.setText("");
 			//it takes in all the fields checks if it exists
 			String songName = song_name.getText().trim();
 			String artistName = artist_name.getText().trim();
@@ -518,7 +524,7 @@ public class SongLib extends JFrame implements ActionListener {
 			String albumName = album.getText().trim();
 			
 			if(songName == null || songName.length()==0 || artistName == null || artistName.length()==0)
-				Error.setText("Error: Fill in Song and Arist textfeild");
+				Error.setText("Error: Fill in Song and Artist");
 			else{
 				
 				if(yearValue == null || yearValue.length()==0) yearValue = null;

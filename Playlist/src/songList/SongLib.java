@@ -81,7 +81,7 @@ public class SongLib extends JFrame implements ActionListener {
 	JTextArea add_year = new JTextArea("Year",1,10);
 	JTextArea add_album = new JTextArea("Album",1,10);
 	
-	public test(String title) throws IOException{
+	public SongList(String title) throws IOException{
 		super(title);
 		
 		// use FlowLayout

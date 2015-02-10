@@ -1,6 +1,6 @@
-package songList;
 //Jasmine Feng and Risham Chokshi
-//cs213 Assignment 1
+//cs213 Assignment 
+package songList;
 import java.util.Comparator;
 
 public class SongComparator implements Comparator<Song> {

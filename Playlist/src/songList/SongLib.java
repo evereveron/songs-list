@@ -76,7 +76,7 @@ public class SongLib extends JFrame implements ActionListener {
 	JTextArea year = new JTextArea("Year",1,10);
 	JTextArea album = new JTextArea("Album",1,10);
 	//for add_inside panel
-	JTextArea add_song_name = new JTextArea();
+	JTextArea add_song_name = new JTextArea("Song",1,10);
 	JTextArea add_artist_name = new JTextArea("Artist Name",1,10);
 	JTextArea add_year = new JTextArea("Year",1,10);
 	JTextArea add_album = new JTextArea("Album",1,10);

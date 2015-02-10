@@ -31,6 +31,7 @@ import javax.swing.JTextArea;
 import javax.swing.ListSelectionModel;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
+import javax.swing.text.DefaultCaret;
 
 public class SongLib extends JFrame implements ActionListener {
 	
@@ -45,7 +46,7 @@ public class SongLib extends JFrame implements ActionListener {
 	JScrollPane listScroller;
 	
 	//Display for Viewing Song
-	JLabel Display = new JLabel("");
+	JTextArea Display = new JTextArea("");
 	JLabel Error = new JLabel("");
 	//creating all the buttons
 	JButton Edit = new JButton("Edit");
@@ -75,12 +76,12 @@ public class SongLib extends JFrame implements ActionListener {
 	JTextArea year = new JTextArea("Year",1,10);
 	JTextArea album = new JTextArea("Album",1,10);
 	//for add_inside panel
-	JTextArea add_song_name = new JTextArea("Song",1, 10);
+	JTextArea add_song_name = new JTextArea();
 	JTextArea add_artist_name = new JTextArea("Artist Name",1,10);
 	JTextArea add_year = new JTextArea("Year",1,10);
 	JTextArea add_album = new JTextArea("Album",1,10);
 	
-	public SongLib(String title) throws IOException{
+	public test(String title) throws IOException{
 		super(title);
 		
 		// use FlowLayout
@@ -93,15 +94,22 @@ public class SongLib extends JFrame implements ActionListener {
 	
 		readFile(filename);
 		
+		//add word wrap to Display
+		Display.setLineWrap(true);
+		Display.setOpaque(false);
+		Display.setWrapStyleWord(true);
 		
-	
+		//add_song_name.setAutoscrolls(true);
+		//DefaultCaret caret = (DefaultCaret)add_song_name.getCaret();
+		//caret.setUpdatePolicy(DefaultCaret.ALWAYS_UPDATE);
+		
 		//adding each component to the panel
 		//adding to the list
 		
 		for(int i =0; i<Songs.size(); i++){
 			String temp = Songs.get(i).getSongsName();
 			if(temp!=null && Songs.get(i).getSongsArtist()!=null){
-				temp = temp + ", " + Songs.get(i).getSongsArtist();
+				temp = temp + "~ " + Songs.get(i).getSongsArtist();
 				songlist.addElement(temp);
 			}
 			}
@@ -258,7 +266,7 @@ public class SongLib extends JFrame implements ActionListener {
 		for(int i =0; i<Songs.size(); i++){
 			String temp = Songs.get(i).getSongsName();
 			if(temp!=null && Songs.get(i).getSongsArtist()!=null){
-				temp = temp + ", " + Songs.get(i).getSongsArtist();
+				temp = temp + "~ " + Songs.get(i).getSongsArtist();
 				songlist.addElement(temp);
 			}
 			}
@@ -365,7 +373,7 @@ public class SongLib extends JFrame implements ActionListener {
 				Song temp = new Song(name,Artist,Year,album);
 				if(FindList(temp)!=true){
 					Songs.add(temp);
-					String temp2 = Songs.get(Songs.size()-1).getSongsName() + ", " + Songs.get(Songs.size()-1).getSongsArtist();
+					String temp2 = Songs.get(Songs.size()-1).getSongsName() + "~ " + Songs.get(Songs.size()-1).getSongsArtist();
 					songlist.addElement(temp2);
 					Error.setText("");
 					SortList();
@@ -407,7 +415,7 @@ public class SongLib extends JFrame implements ActionListener {
 	private String[] separateSelection(String selection) {
 		String[] ans;
 		
-		ans = selection.split(", ");
+		ans = selection.split("~ ");
 		
 		//System.out.println("" + ans[0] + ans[1]);
 		
